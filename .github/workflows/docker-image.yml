@@ -14,5 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    # docker login -u jmp23 -p mi contraseña
+    # dckr_pat_oNzbdrZ6ciF4-7Deskjw0OhWtv0
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
