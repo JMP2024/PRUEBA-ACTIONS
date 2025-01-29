@@ -5,44 +5,48 @@ WORKDIR /app
 RUN apt update && \
     apt install -y unzip git libzip-dev && \
     docker-php-ext-install zip
-
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 COPY composer.json ./
 
+#Dependencias de no desarrollo
 RUN composer install --no-dev
-# docker buildx build -t calculadora:base --target base .
 
-FROM base AS dev 
 
-RUN pecl install xdebug && \
-    docker-php-ext-enable xdebug
+FROM base AS dev
+
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 COPY ./docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 COPY . .
-# php -S 0.0.0.0:8000 -t public
+
 CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
-# docker buildx build -t calculadora:dev --target dev .
-FROM base AS test
+
+
+
+FROM base AS test 
 
 RUN composer require --dev phpunit/phpunit
 
 COPY . .
 
-#./vendor/bin/phpunit --testdox tests
-CMD ["./vendor/bin/phpunit","--testdox","tests"]
-#docker buildx build -t calculadora:test --target test .
 
+#CMD es el ultimo comando que se va a poner
+CMD ["./vendor/bin/phpunit", "--testdox", "tests"]
+
+#Produccion
 FROM base AS prod
 
 COPY . .
 
-RUN composer install --no-dev--optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader
 
-RUN rm -rf docker/ tests/
+#Aqui se pone todo lo que no es necesario subir, es decir lo no necesario
+RUN rm -rf docker/ tests/ 
 
 EXPOSE 80
 
-CMD ["php", "-S","0.0.0.0:80", "-t", "public"]
-#docker buildx build -t calculadora:v1.0.0 --target prod .
+CMD ["php", "-S", "0.0.0.0:80", "-t", "public"]
+
+#Aqui ya se pone la version en el docker buildx
