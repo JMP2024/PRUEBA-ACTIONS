@@ -14,10 +14,11 @@ jobs:
     steps:
     - name: Hacer checkout
       uses: actions/checkout@v4
-
     - name: Loguearse en Docker
       run: |
         echo "Logueandose..."
         docker login -u ${{secrets.DOCKER_USER}} -p ${{secrets.DOCKER_TOKEN}}
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag jmp23/calculadora:$(date +%s)
+      run: docker build -t jmp23/calculadora:$(date +%s)
+    - name: Subiendo Imagen
+      run: docker push jmp23/calculadora:latest
