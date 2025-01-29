@@ -19,6 +19,6 @@ jobs:
         echo "Logueandose..."
         docker login -u ${{secrets.DOCKER_USER}} -p ${{secrets.DOCKER_TOKEN}}
     - name: Build the Docker image
-      run: docker build -t jmp23/calculadora:$(date +%s)
+      run: docker build -t ${{secrets.DOCKER_USER}}/calculadora:latest .
     - name: Subiendo Imagen
-      run: docker push jmp23/calculadora:latest
+      run: docker push ${{secrets.DOCKER_USER}}/calculadora:latest
